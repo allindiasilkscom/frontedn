@@ -5,6 +5,7 @@ import Profile from "./pages/Profile";
 import Signing from "./pages/Signing";
 import SignOut from "./pages/SignOut";
 import Header from "./components/Header";
+import SignUp from "./pages/SignUp"; 
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
       <Route path="profile" element={<Profile/>}/>
       <Route path="sign-in" element={<Signing/>}/>
       <Route path="sign-out" element={<SignOut/>}/>
+      <Route path="sign-up" element={<SignUp/>}/>
    
     </Routes>
    

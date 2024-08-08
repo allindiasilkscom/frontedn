@@ -1,19 +1,14 @@
+
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  signInStart,
-  signInSuccess,
-  signInFailure,
-} from "../redux/User/userSlice";
-import OAuth from "../components/OAuth";
+import Oauth from "../components/OAuth";
 
-const Signing = () => {
-  const dispatch = useDispatch();
-  const {loading,error} = useSelector((state)=>state.user);
+
+const SignUp = () => {
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({});
   const navigate = useNavigate();
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
@@ -21,8 +16,8 @@ const Signing = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      dispatch(signInStart());
-      const res = await fetch("/api/auth/signin", {
+      setLoading(true);
+      const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -31,14 +26,17 @@ const Signing = () => {
       });
       const data = await res.json();
 
-      if (data.success === false) {
-        dispatch(signInFailure(data.message));
+      if (data.success == false) {
+        setLoading(false);
+        setError(data.message);
         return;
       }
-      dispatch(signInSuccess(data));
-      navigate("/");
-    } catch (error) { 
-      dispatch(signInFailure(error.message));
+      setLoading(false);
+      setError(null);
+      navigate("/sign-in")
+    } catch (error) {
+      setLoading(false);
+      setError(error.message);
     }
   };
 
@@ -46,9 +44,15 @@ const Signing = () => {
     <div className="p-3 max-w-lg mx-auto">
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <h1 className="text-3xl items-center font font-semibold my-7">
-          Sign In
+          Sign Up
         </h1>
-
+        <input
+          type="text"
+          placeholder="Please Enter the username"
+          className="border p-3 rounded-lg"
+          id="username"
+          onChange={handleChange}
+        />
         <input
           type="text"
           placeholder="Please Enter the Email"
@@ -64,22 +68,19 @@ const Signing = () => {
           onChange={handleChange}
         />
         <button className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-65">
-          {loading ? "Loading..." : "Register"}
-          
+          {loading ? "Loading...":"Register"}
         </button>
-        <OAuth/>
+        <Oauth/>
       </form>
 
       <div className="flex gap-2 mt-2">
-        <p>Create a Account ? </p>
-        <Link to={"/sign-up"}>
-          {" "}
-          <span className="text-blue-700">Sign Up</span>
-        </Link>
+        <p>Have an Account ? </p>
+        <Link to={"/sign-in"}> <span className="text-blue-700">Sign In</span></Link>
+       
       </div>
-      {error && <p className="text-red-500 m">{error}</p>}
+      {error&& <p className="text-red-500 m">{error}</p>}
     </div>
   );
 };
 
-export default Signing;
+export default SignUp;
